@@ -23,7 +23,6 @@ else
 	font = "Interface\\AddOns\\oUF_Tsigo\\media\\font.ttf"
 end
 
-local LibMobHealth = LibStub("LibMobHealth-4.0", true)
 local playerClass = select(2, UnitClass("player")) -- combopoints for druid/rogue
 local playerName = UnitName("player")
 
@@ -271,11 +270,7 @@ local function updateHealth(self, event, unit, bar, min, max)
 			bar.value:SetTextColor(.5, .5, .5)
 		end
 	else
-		-- Use LibMobHealth-4.0 if it's available
 		local curhp, maxhp = min, max
-		if LibMobHealth and max == 100 then
-			curhp, maxhp = LibMobHealth:GetUnitHealth(unit)
-		end
 		
 		if bar.value then
 			formats[unit].health('health', bar.value, curhp, maxhp)
