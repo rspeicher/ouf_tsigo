@@ -1,9 +1,9 @@
-## Interface: 20400
+## Interface: 30000
 ## Title: oUF_Tsigo
 ## Author: tsigo
 ## Notes: oUF layout based on Caith's PitBull layout.
 ## X-Credits: Rabbit, Ammo, Caith
 ## Dependencies: oUF
-## OptionalDeps: oUF_CombatFeedback, oUF_PowerSpark, LibMobHealth-4.0, LibSharedMedia-3.0
+## OptionalDeps: oUF_CombatFeedback, oUF_PowerSpark, LibSharedMedia-3.0
 
 layout.lua
