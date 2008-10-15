@@ -55,7 +55,7 @@ local function ColorGradient(perc, ...)
 end
 
 local select = select
-local UnitName = UnitName
+--local UnitName = UnitName
 local UnitLevel = UnitLevel
 local UnitClass = UnitClass
 local UnitIsDead = UnitIsDead
@@ -92,14 +92,14 @@ local health = {
 }
 
 local UnitReactionColor = {
-	[1] = { r = 219/255, g = 48/255,  b = 41/255 }, -- Hated
-	[2] = { r = 219/255, g = 48/255,  b = 41/255 }, -- Hostile
-	[3] = { r = 219/255, g = 48/255,  b = 41/255 }, -- Unfriendly
-	[4] = { r = 218/255, g = 197/255, b = 92/255 }, -- Neutral
-	[5] = { r = 75/255,  g = 175/255, b = 76/255 }, -- Friendly
-	[6] = { r = 75/255,  g = 175/255, b = 76/255 }, -- Honored
-	[7] = { r = 75/255,  g = 175/255, b = 76/255 }, -- Revered
-	[8] = { r = 75/255,  g = 175/255, b = 76/255 }, -- Exalted
+	[1] = { 219/255, 48/255,  41/255 }, -- Hated
+	[2] = { 219/255, 48/255,  41/255 }, -- Hostile
+	[3] = { 219/255, 48/255,  41/255 }, -- Unfriendly
+	[4] = { 218/255, 197/255, 92/255 }, -- Neutral
+	[5] = { 75/255,  175/255, 76/255 }, -- Friendly
+	[6] = { 75/255,  175/255, 76/255 }, -- Honored
+	[7] = { 75/255,  175/255, 76/255 }, -- Revered
+	[8] = { 75/255,  175/255, 76/255 }, -- Exalted
 }
 
 oUF.colors.power = {
@@ -114,26 +114,66 @@ oUF.colors.power = {
 -- Custom tags
 -- ----------------------------------------------------------------------------
 
-local barFormatMinMax = "%d | %d"											  -- 1234 | 5678
-local verbosehp = "|cff00FF00%d|r |cffFFFFFF|||r |cff395A09%d|r" -- 1234 | 5678 [colored green]
+local verbosehp = "|cff00FF00%d|r |cffFFFFFF|||r |cff395A09%d|r"  -- 1234 | 5678 [colored green]
 local verbosepp = "|cff5EAEF7%d|r |cffFFFFFF|||r |cff063C82%d|r"  -- 1234 | 5678 [colored blue]
-local barFormatPerc = "%d%%"												  -- 100%
-local barFormatPerc_Health = "|cff%02x%02x%02x%s%%|r"						  -- 100% [colored gradient]
-local barFormatPercMinMax = barFormatPerc.." "..barFormatMinMax				  -- 100% 1234 | 5678
-local barFormatDeficit = "|cffff8080%d|r"									  -- -1234 [colored red]
+local perhp     = "|cff%02x%02x%02x%s%%|r"						  -- 100% [colored gradient]
 
-oUF.TagEvents["[verbosehp]"] = "UNIT_HEALTH UNIT_MAXHEALTH"
-oUF.TagEvents["[verbosehp]"] = "UNIT_ENERGY UNIT_FOCUS UNIT_MANA UNIT_RAGE"
+oUF.TagEvents["[verbosehp]"]   = "UNIT_HEALTH UNIT_MAXHEALTH"
+oUF.TagEvents["[perhpgrad]"]  = "UNIT_HEALTH UNIT_MAXHEALTH"
+oUF.TagEvents["[verbosehp]"]   = "UNIT_ENERGY UNIT_FOCUS UNIT_MANA UNIT_RAGE"
+oUF.TagEvents["[verbosename]"] = "UNIT_NAME_UPDATE"
 
 oUF.Tags["[verbosehp]"] = function(u) local c, m = UnitHealth(u), UnitHealthMax(u) return (c <= 1 or not UnitIsConnected(u)) and "" or verbosehp:format(c, m) end
 oUF.Tags["[verbosepp]"] = function(u) local c, m = UnitMana(u), UnitManaMax(u) return (c <= 1 or not UnitIsConnected(u)) and "" or verbosepp:format(c, m) end
+oUF.Tags["[perhpgrad]"] = function(u)
+	local v = oUF.Tags["[perhp]"](u)
 
---[[
-oUF.TagEvents["[tsihp]"] = "UNIT_HEALTH UNIT_MAXHEALTH"
-oUF.Tags["[tsimaxhp]"] = function(u) local m = UnitHealthMax(u) return "|cff395A09" .. m .. "|r" end
-oUF.Tags["[tsihp]"] = function(u) local c, m = UnitHealth(u), UnitHealthMax(u) return (c <= 1 or not UnitIsConnected(u)) and "" or c >= m and oUF.Tags["[tsimaxhp]"](u)
-	or UnitCanAttack("player", u) and oUF.Tags["[perhp]"](u).."%" or "-"..oUF.Tags["[missinghp]"](u) end
-]]
+	if v < 100 then
+		-- Color health percent value in a gradient
+		local r, g, b = ColorGradient(v * 1.00, -- Function expects a decimal
+			health[0].r, health[0].g, health[0].b,
+			health[1].r, health[1].g, health[1].b,
+			health[2].r, health[2].g, health[2].b
+		)
+		return perhp:format(r * 255, g * 255, b * 255, v)
+	end
+	return ""
+end
+
+-- TODO: Clean the fuck up
+oUF.Tags["[verbosename]"] = function(u)
+	if u == "player" then return "" end
+	
+	local name = "%s |cff%02x%02x%02x%s|r %s"
+	local classifications = {
+		worldboss = "??",
+		rareelite = "%s*+",
+		rare = "%s*",
+		elite = "%s+",
+	}
+	
+	local _, c = UnitClass(u)
+	local color = oUF.colors.class[c] or UnitReactionColor[4]
+		
+	if u == "target" then
+		local cl = UnitClassification(u)
+		local level = classifications[cl] and classifications[cl]:format(UnitLevel(u)) or UnitLevel(u)
+		local n = UnitName(u) or ''
+		local race = UnitRace(u) or UnitCreatureType(u) or ''
+		return name:format(level, color[1] * 255, color[2] * 255, color[3] * 255, n, race)
+	elseif u == "targettarget" then
+		local n = UnitName(u)
+		if n == playerName then
+			return "|cffFF0000<< You >>|r"
+		else
+			return name:format('', color[1] * 255, color[2] * 255, color[3] * 255, n, '')
+		end
+	else
+		local n = UnitName(u)
+		local level = UnitLevel(u)
+		return name:format(level, color[1] * 255, color[2] * 255, color[3] * 255, n, '')
+	end
+end
 
 -- ----------------------------------------------------------------------------
 -- Name Display
@@ -142,45 +182,6 @@ oUF.Tags["[tsihp]"] = function(u) local c, m = UnitHealth(u), UnitHealthMax(u) r
 --[[
 local grey = {0.5, 0.5, 0.5}
 local white = {1, 1, 1}
-local name = "%s |cff%02x%02x%02x%s|r %s"
-local classifications = {
-	worldboss = "??",
-	rareelite = "%s*+",
-	rare = "%s*",
-	elite = "%s+",
-}
-local function updateName(self, event, unit)
-	if unit == "player" then return end
-	if not self.Name then return end
-	
-	if self.unit == unit or (not unit and self.unit) then
-		local u = unit or self.unit
-		local _, c = UnitClass(u)
-		local color = RAID_CLASS_COLORS[c] or UnitReactionColor[4]
-		
-		if unit == "target" then
-			local cl = UnitClassification(u)
-			local level = classifications[cl] and classifications[cl]:format(UnitLevel(u)) or UnitLevel(u)
-			local n = UnitName(u)
-			local race = UnitRace(u) or UnitCreatureType(u) or ''
-			self.Name:SetText(name:format(level, color.r * 255, color.g * 255, color.b * 255, n, race)) -- format arg #6
-		elseif unit == "targettarget" then
-			local n = UnitName(u)
-			if n == playerName then
-				self.Name:SetText("|cffFF0000<< You >>|r")
-			else
-				self.Name:SetText(name:format('', color.r * 255, color.g * 255, color.b * 255, n, ''))
-			end
-		else
-			local n = UnitName(u)
-			local level = UnitLevel(u)
-			self.Name:SetText(name:format(level, color.r * 255, color.g * 255, color.b * 255, n, ''))
-		end
-
-		local c = (not UnitIsConnected(u) or UnitIsGhost(u) or UnitIsDead(u)) and grey or white
-		self.Name:SetTextColor(unpack(c))
-	end
-end
 
 -- ----------------------------------------------------------------------------
 -- Health / Power Formats
@@ -540,13 +541,8 @@ local func = function(settings, self, unit)
 
 		self.TaggedStrings = {hpv, ppv}
 		self.Spark = createPowerSpark(pp)
-	--[[
 	-- Target ---------------------------------------------
 	elseif unit == 'target' then
-		-- Dimensions
-		self:SetWidth(250)
-		self:SetHeight(49)
-		
 		local ib = createInfoBarFrame(self)		-- Info Bar
 		local hp = createHealthBarFrame(self)	-- Health Bar
 		local pp = createPowerBarFrame(hp)		-- Power Bar
@@ -557,10 +553,12 @@ local func = function(settings, self, unit)
 		local name = createString(ib, fontSize)
 		name:SetPoint("LEFT", 4, 2)
 		name:SetJustifyH("LEFT")
+		name:SetText("[verbosename]")
 		
 		-- Health string (absolute)
 		local hpv = createString(ib, fontSize)
 		hpv:SetPoint("RIGHT", -4, 2)
+		hpv:SetText("[verbosehp]")
 		
 		-- Prevent the name from going through the health values
 		name:SetPoint("RIGHT", hpv, "LEFT")
@@ -568,6 +566,7 @@ local func = function(settings, self, unit)
 		-- Health string (percentage)
 		local hpp = createString(hp, fontSize + 2)
 		hpp:SetPoint("RIGHT", -4, 0)
+		hpp:SetText("[perhpgrad]")
 		
 		-- Auras
 		local auras = CreateFrame("Frame", nil, self)
@@ -578,6 +577,7 @@ local func = function(settings, self, unit)
 		auras.numBuffs = 40
 		auras.numDebuffs = 40
 		auras.gap = true
+		self.Auras = auras
 		
 		-- Raid Icon
 		local ricon = self:CreateTexture(nil, "OVERLAY")
@@ -595,20 +595,25 @@ local func = function(settings, self, unit)
 			self.CPoints:SetJustifyH("RIGHT")
 		end
 		
-		-- Properties
-		self.Name = name
+		-- Health Properties
+		hp.colorTapping = true
+		hp.colorHappiness = true
+		hp.colorDisconnected = true
+		hp.colorClass = true
+		hp.colorClassNPC = false
+		hp.colorReaction = true
 		self.Health = hp
+		
+		-- Power Properties
+		pp.colorTapping = false
+		pp.colorDisconnected = true
+		pp.colorPower = true
 		self.Power = pp
-		self.Auras = auras
 		
-		hp.value = hpv
-		hp.percent = hpp
+		self.TaggedStrings = {name, hpv, hpp}
 		
-		self.UNIT_NAME_UPDATE = updateName
-		self.OverrideUpdateHealth = updateHealth
-		self.OverrideUpdatePower = updatePower
 		self.PostCreateAuraIcon = auraIcon
-		
+	--[[
 	-- TargetTarget ---------------------------------------
 	elseif unit == 'targettarget' then
 		-- Dimensions
