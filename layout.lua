@@ -26,9 +26,9 @@ end
 local playerClass = select(2, UnitClass("player")) -- combopoints for druid/rogue
 local playerName = UnitName("player")
 
-local function menu(self)
+local menu = function(self)
 	local unit = self.unit:sub(1, -2)
-	local cunit = self.unit:gsub("^%l", string.upper)
+	local cunit = self.unit:gsub("(.)", string.upper, 1)
 
 	if unit == "party" or unit == "partypet" then
 		ToggleDropDownMenu(1, nil, _G["PartyMemberFrame"..self.id.."DropDown"], "cursor", 0, 0)
@@ -96,7 +96,7 @@ local power = {
 	[1] = { r = 160/255, g = 96/255,  b = 97/255  }, -- Rage
 	[2] = { r = 202/255, g = 181/255, b = 126/255 }, -- Focus
 	[3] = { r = 228/255, g = 218/255, b = 167/255 }, -- Energy
-	[4] = { r = 0, g = 1, b = 1} -- Happiness
+	[4] = { r = 0,       g = 1,       b = 1}         -- Focus
 }
 
 local UnitReactionColor = {
@@ -110,10 +110,32 @@ local UnitReactionColor = {
 	[8] = { r = 75/255,  g = 175/255, b = 76/255 }, -- Exalted
 }
 
+oUF.colors.power = {
+	['MANA'] = { 146/255, 196/255, 249/255 }, -- Mana
+	['RAGE'] = { 160/255, 96/255,  97/255  }, -- Rage
+	['FOCUS'] = { 202/255, 181/255, 126/255 }, -- Focus
+	['ENERGY'] = { 228/255, 218/255, 167/255 }, -- Energy
+	['FOCUS'] = { 0, 1, 1} -- Focus
+}
+
+-- ----------------------------------------------------------------------------
+-- Custom tags
+-- ----------------------------------------------------------------------------
+
+--[[
+oUF.TagEvents["[tsihp]"] = "UNIT_HEALTH UNIT_MAXHEALTH"
+oUF.Tags["[tsimaxhp]"] = function(u) local m = UnitHealthMax(u) return "|cff395A09" .. m .. "|r" end
+oUF.Tags["[tsihp]"] = function(u) local c, m = UnitHealth(u), UnitHealthMax(u) return (c <= 1 or not UnitIsConnected(u)) and "" or c >= m and oUF.Tags["[tsimaxhp]"](u)
+	or UnitCanAttack("player", u) and oUF.Tags["[perhp]"](u).."%" or "-"..oUF.Tags["[missinghp]"](u) end
+	
+local barFormatMinMax_Health = "|cff00FF00%d|r |cffFFFFFF|||r |cff395A09%d|r" -- 1234 | 5678 [colored green]
+]]
+
 -- ----------------------------------------------------------------------------
 -- Name Display
 -- ----------------------------------------------------------------------------
 
+--[[
 local grey = {0.5, 0.5, 0.5}
 local white = {1, 1, 1}
 local name = "%s |cff%02x%02x%02x%s|r %s"
@@ -328,6 +350,7 @@ local function updatePower(self, event, unit, bar, min, max)
 		end
 	end
 end
+]]
 
 local function auraIcon(self, button)
 	local t = button:CreateTexture(nil, "OVERLAY")
@@ -357,14 +380,14 @@ local function createBarFrame(parent, height)
 end
 local function createInfoBarFrame(parent)
 	local bar = createBarFrame(parent, 17)
-	bar:SetStatusBarColor(1, 1, 1, 0.1)
+	--bar:SetStatusBarColor(1, 1, 1, 0.1)
 	bar:SetPoint("BOTTOM", parent, "BOTTOM", 0, 0)
 	
 	return bar
 end
 local function createHealthBarFrame(parent)
 	local bar = createBarFrame(parent, 24)
-	bar:SetStatusBarColor(0, 0.5, 0)
+	--bar:SetStatusBarColor(0, 0.5, 0)
 	bar:SetPoint("TOP", 0, 1)
 	bar:SetPoint("LEFT", -1, 0)
 	bar:SetPoint("RIGHT", 1, 0)
@@ -382,7 +405,7 @@ local function createHealthBarFrame(parent)
 end
 local function createPowerBarFrame(parent)
 	local bar = createBarFrame(parent, 5)
-	bar:SetStatusBarColor(.25, .25, .35)
+	--bar:SetStatusBarColor(.25, .25, .35)
 	bar:SetPoint("TOP", parent, "BOTTOM", 0, -2)
 	bar:SetPoint("LEFT")
 	bar:SetPoint("RIGHT")
@@ -434,7 +457,12 @@ local function createPowerSpark(parent)
 	return nil
 end
 
-local function func(settings, self, unit)
+-- Frame sizes
+local width,  height  = 250, 49 -- Player and Target
+local pwidth, pheight = 200, 20 -- Focus, Party and Party Pet
+local twidth, theight = 150, 37 -- Target of Target
+
+local func = function(settings, self, unit)
 	self.unit = unit
 	self.menu = menu
 	
@@ -444,21 +472,37 @@ local function func(settings, self, unit)
 	self:RegisterForClicks("anyup")
 	self:SetAttribute("*type2", "menu")
 	
-	--[[
-	self:EnableMouse(true)
-	self:SetScript("OnEnter", UnitFrame_OnEnter)
-	self:SetScript("OnLeave", UnitFrame_OnLeave)
-	self:RegisterForClicks("anyup")
-	self:SetAttribute("*type2", "menu")
+	self:SetBackdrop(backdrop)
+	self:SetBackdropColor(0, 0, 0, .9)
+	
+	--[[ tek
+	-- Health bar
+	local hp = CreateFrame("StatusBar")
+	hp:SetWidth(width)
+	hp:SetHeight(bheight)
+	hp:SetStatusBarTexture(statusbarTexture)
+	
+	hp:SetParent(self)
+	hp:SetStatusBarColor(0, 0.5, 0)
+	hp:SetPoint("TOP", 0, 1)
+	hp:SetPoint("LEFT", -1, 0)
+	hp:SetPoint("RIGHT", 1, 0)
+	
+	self.Health = hp
+	--self.PostUpdateHealth = PostUpdateHealth
+	
+	local hpv = hp:CreateFontString(nil, "OVERLAY")
+	hpv:SetFont(font, fontSize)
+	hpv:SetText("[dead][offline][tsihp]")
+	hpv:SetPoint("RIGHT", -4, 2)
+	hpv:SetShadowColor(0, 0, 0, 0.9)
+	hpv:SetShadowOffset(1, -1)
+	
+	self.TaggedStrings = {hpv}
 	]]
 	
 	-- Player ---------------------------------------------
 	if unit == 'player' then
-		-- Dimensions
-		--self:SetWidth(250)
-		--self:SetHeight(49)
-		
-		self.UNIT_NAME_UPDATE = updateName		-- Name
 		local ib = createInfoBarFrame(self)		-- Info Bar
 		local hp = createHealthBarFrame(self) 	-- Health Bar
 		local pp = createPowerBarFrame(hp) 		-- Power Bar
@@ -468,22 +512,33 @@ local function func(settings, self, unit)
 		-- Health Values
 		local hpv = createString(ib, fontSize)
 		hpv:SetPoint("RIGHT", -4, 2)
+		hpv:SetText("[dead][offline][curhp] | [maxhp]")
 		
 		-- Power Values
 		local ppv = createString(ib, fontSize)
 		ppv:SetPoint("LEFT", 4, 2)
+		ppv:SetText("[curpp] | [maxpp]")
 		
-		-- Properties
+		-- Health Properties
+		hp.colorTapping = true
+		hp.colorHappiness = true
+		hp.colorDisconnected = true
+		hp.colorClass = true
+		hp.colorClassNPC = false
+		hp.colorReaction = true
 		self.Health = hp
+		
+		-- Power Properties
+		pp.colorTapping = false
+		pp.colorDisconnected = true
+		pp.colorPower = true
 		self.Power = pp
-		
-		hp.value = hpv
-		pp.value = ppv
 
-		self.Spark = createPowerSpark(pp)
-		self.OverrideUpdateHealth = updateHealth
-		self.OverrideUpdatePower = updatePower
-		
+		self.TaggedStrings = {hpv, ppv}
+		--self.Spark = createPowerSpark(pp)
+		--self.OverrideUpdateHealth = updateHealth
+		--self.OverrideUpdatePower = updatePower
+	--[[
 	-- Target ---------------------------------------------
 	elseif unit == 'target' then
 		-- Dimensions
@@ -674,81 +729,64 @@ local function func(settings, self, unit)
 		self.OverrideUpdateHealth = updateHealth
 		self.OverrideUpdatePower = updatePower
 		self.PostCreateAuraIcon = auraIcon
+	]]
 	end
 
 	--self:SetFrameStrata("BACKGROUND")
-	self:SetBackdrop(backdrop)
-	self:SetBackdropColor(0, 0, 0, .9)
-
-	return self
+	--return self
 end
 
 oUF:RegisterStyle("tsigo", setmetatable({
-	["initial-width"] = 250,
-	["initial-height"] = 49,
+	["initial-width"] = width,
+	["initial-height"] = height,
 }, {__call = func}))
 
-oUF:RegisterStyle("tsigo_Small", setmetatable({
-	["initial-width"] = 150,
-	["initial-height"] = 37,
+oUF:RegisterStyle("tsigo_ToT", setmetatable({
+	["initial-width"] = twidth,
+	["initial-height"] = theight,
 }, {__call = func}))
 
 oUF:RegisterStyle("tsigo_Party", setmetatable({
-	["initial-width"] = 200,
-	["initial-height"] = 20,
-	["size"] = 'party',
-}, {__call = func}))
-
-oUF:RegisterStyle("tsigo_PartyPet", setmetatable({
-	["initial-width"] = 200,
-	["initial-height"] = 20,
-	["size"] = 'partypet',
+	["initial-width"] = pwidth,
+	["initial-height"] = pheight,
 }, {__call = func}))
 
 -- ----------------------------------------------------------------------------
--- Cluster
+-- Player, ToT, Target
 -- ----------------------------------------------------------------------------
 
 oUF:SetActiveStyle("tsigo")
 
--- Player / Pet
 local player = oUF:Spawn("player")
 player:SetPoint("BOTTOM", -225, 65)
---local pet = oUF:Spawn("pet", "oUF_Pet")
---pet:SetPoint("TOPLEFT", player, "BOTTOMLEFT", 0, -8)
 
--- Target
 local target = oUF:Spawn("target")
 target:SetPoint("BOTTOM", 225, 65)
 
-oUF:SetActiveStyle("tsigo_Small")
+oUF:SetActiveStyle("tsigo_ToT")
 
--- TargetTarget
 local tot = oUF:Spawn("targettarget")
 tot:SetPoint("BOTTOM", 0, 65)
 
+-- ----------------------------------------------------------------------------
+-- Focus, Party, Party Pets
+-- ----------------------------------------------------------------------------
+
 oUF:SetActiveStyle("tsigo_Party")
 
--- Focus
 local focus = oUF:Spawn("focus")
 focus:SetPoint("BOTTOMRIGHT", player, "TOPLEFT", -10, 75)
 
--- Party
 local party = oUF:Spawn("header", "oUF_Party")
 party:SetPoint("BOTTOMLEFT", target, "TOPRIGHT", 15, 75)
-party:SetAttribute("yOffset", -20)
+party:SetAttribute("yOffset", pheight - (pheight * 2)) -- Grow up (does -pheight work?)
 party:SetAttribute("showParty", true)
-party:Show()
 
--- Party Pets
-oUF:SetActiveStyle("tsigo_PartyPet")
 local partypet = oUF:Spawn("header", "oUF_PartyPet", true)
-partypet:SetPoint("BOTTOM", party, "TOP", 0, 20)
-partypet:SetAttribute("yOffset", -20)
+partypet:SetPoint("BOTTOM", party, "TOP", 0, pheight)
+partypet:SetAttribute("yOffset", pheight - (pheight * 2)) -- Grow up (does -pheight work?)
 partypet:SetAttribute("showParty", true)
-partypet:Show()
 
---[[
 local toggleParty = CreateFrame("Frame")
 toggleParty:SetScript("OnEvent", function(self)
 	if InCombatLockdown() then 
@@ -762,7 +800,7 @@ toggleParty:SetScript("OnEvent", function(self)
 			party:Show()
 			partypet:Show()
 			
-			partypet:SetPoint("BOTTOM", party, "TOP", 0, GetNumPartyMembers() * 20)
+			partypet:SetPoint("BOTTOM", party, "TOP", 0, GetNumPartyMembers() * pheight)
 		end
 	end
 end)
@@ -770,4 +808,3 @@ toggleParty:RegisterEvent("PARTY_MEMBERS_CHANGED")
 toggleParty:RegisterEvent("PARTY_LEADER_CHANGED")
 toggleParty:RegisterEvent("RAID_ROSTER_UPDATE")
 toggleParty:RegisterEvent("PLAYER_LOGIN")
-]]
