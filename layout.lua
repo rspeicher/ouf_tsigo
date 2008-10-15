@@ -367,16 +367,17 @@ local func = function(settings, self, unit)
 		hpp:SetPoint("RIGHT", -4, 0)
 		hpp:SetText("[perhpgrad]")
 		
-		-- Auras TODO: Fix
+		-- Auras
 		local auras = CreateFrame("Frame", nil, self)
-		auras.size = self:GetWidth() / 8
+		auras.size = width / 8
 		auras:SetHeight(auras.size * 4)
-		auras:SetWidth(self:GetWidth())
+		auras:SetWidth(width)
 		auras:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 2)
-		--auras.numBuffs = 40
-		--auras.numDebuffs = 40
-		--auras.gap = true
+		auras.numBuffs = 40
+		auras.numDebuffs = 40
+		auras.gap = true
 		self.Auras = auras
+		self.PostCreateAuraIcon = auraIcon
 		
 		-- Raid Icon TODO: Test
 		local ricon = self:CreateTexture(nil, "OVERLAY")
@@ -410,8 +411,6 @@ local func = function(settings, self, unit)
 		self.Power = pp
 		
 		self.TaggedStrings = {name, hpv, hpp}
-		
-		--self.PostCreateAuraIcon = auraIcon
 	-- TargetTarget ---------------------------------------
 	elseif unit == 'targettarget' then
 		local ib = createInfoBarFrame(self)			-- Info Bar
