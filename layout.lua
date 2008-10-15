@@ -7,6 +7,8 @@
 -- by tsigo@tsigo.org
 --
 --LibStub("AceConsole-2.0"):PrintLiteral(...)
+
+TODO
 --]]
 
 -- Settings --------------------------------------------------------------------
@@ -119,7 +121,7 @@ local verbosepp = "|cff5EAEF7%d|r |cffFFFFFF|||r |cff063C82%d|r"  -- 1234 | 5678
 local perhp     = "|cff%02x%02x%02x%s%%|r"						  -- 100% [colored gradient]
 
 oUF.TagEvents["[verbosehp]"]   = "UNIT_HEALTH UNIT_MAXHEALTH"
-oUF.TagEvents["[perhpgrad]"]  = "UNIT_HEALTH UNIT_MAXHEALTH"
+oUF.TagEvents["[perhpgrad]"]   = "UNIT_HEALTH UNIT_MAXHEALTH"
 oUF.TagEvents["[verbosehp]"]   = "UNIT_ENERGY UNIT_FOCUS UNIT_MANA UNIT_RAGE"
 oUF.TagEvents["[verbosename]"] = "UNIT_NAME_UPDATE"
 
@@ -130,7 +132,7 @@ oUF.Tags["[perhpgrad]"] = function(u)
 
 	if v < 100 then
 		-- Color health percent value in a gradient
-		local r, g, b = ColorGradient(v * 1.00, -- Function expects a decimal
+		local r, g, b = ColorGradient(v / 100.00, -- Function expects a decimal
 			health[0].r, health[0].g, health[0].b,
 			health[1].r, health[1].g, health[1].b,
 			health[2].r, health[2].g, health[2].b
