@@ -130,7 +130,7 @@ oUF.Tags["[verbosepp]"] = function(u) local c, m = UnitMana(u), UnitManaMax(u) r
 oUF.Tags["[perhpgrad]"] = function(u)
 	local v = oUF.Tags["[perhp]"](u)
 
-	if v < 100 then
+	if v < 100 and v > 0 then
 		-- Color health percent value in a gradient
 		local r, g, b = ColorGradient(v / 100.00, -- Function expects a decimal
 			health[0].r, health[0].g, health[0].b,
