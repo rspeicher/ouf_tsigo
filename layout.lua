@@ -82,7 +82,7 @@ oUF.colors.class = {
 	["PRIEST"]  = { 194/255, 252/255, 254/255 },
 	["ROGUE"]   = { 255/255, 241/255, 106/255 },
 	["SHAMAN"]  = { 0/255,   254/255, 255/255 },	-- Caith's Shaman color
-	["SHAMAN"]  = { 6/255,   60/255,  188/255 },	-- More traditional Shaman blue
+	--["SHAMAN"]  = { 6/255,   60/255,  188/255 },	-- More traditional Shaman blue
 	["WARLOCK"] = { 187/255, 162/255, 254/255 },
 	["WARRIOR"] = { 210/255, 188/255, 149/255 },
 }
