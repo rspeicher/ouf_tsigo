@@ -222,6 +222,13 @@ local function createHealthBarFrame(parent)
 	bar:SetPoint("LEFT", -1, 0)
 	bar:SetPoint("RIGHT", 1, 0)
 	
+	bar.colorTapping = true
+	bar.colorHappiness = true
+	bar.colorDisconnected = true
+	bar.colorClass = true
+	bar.colorClassNPC = false
+	bar.colorReaction = true
+	
 	local bg = bar:CreateTexture(nil, "ARTWORK")
 	bg:SetHeight(bar:GetHeight())
 	bg:SetWidth(bar:GetWidth())
@@ -239,6 +246,10 @@ local function createPowerBarFrame(parent)
 	bar:SetPoint("TOP", parent, "BOTTOM", 0, -2)
 	bar:SetPoint("LEFT")
 	bar:SetPoint("RIGHT")
+	
+	bar.colorTapping = false
+	bar.colorDisconnected = true
+	bar.colorPower = true
 	
 	return bar
 end
@@ -323,19 +334,7 @@ local func = function(settings, self, unit)
 		ppv:SetPoint("LEFT", 4, 2)
 		ppv:SetText("[verbosepp]")
 		
-		-- Health Properties
-		hp.colorTapping = true
-		hp.colorHappiness = true
-		hp.colorDisconnected = true
-		hp.colorClass = true
-		hp.colorClassNPC = false
-		hp.colorReaction = true
 		self.Health = hp
-		
-		-- Power Properties
-		pp.colorTapping = false
-		pp.colorDisconnected = true
-		pp.colorPower = true
 		self.Power = pp
 
 		self.TaggedStrings = {hpv, ppv}
@@ -387,7 +386,7 @@ local func = function(settings, self, unit)
 		ricon:SetTexture("Interface\\TargetingFrame\\UI-RaidTargetingIcons")
 		self.RaidIcon = ricon
 		
-		-- Combo Points TODO: Test
+		-- Combo Points
 		if playerClass == "ROGUE" or playerClass == "DRUID" then
 			self.CPoints = createString(self, fontSize + 4)
 			self.CPoints:SetPoint("LEFT", self, "RIGHT", 9, 3)
@@ -395,19 +394,7 @@ local func = function(settings, self, unit)
 			self.CPoints:SetJustifyH("RIGHT")
 		end
 		
-		-- Health Properties
-		hp.colorTapping = true
-		hp.colorHappiness = true
-		hp.colorDisconnected = true
-		hp.colorClass = true
-		hp.colorClassNPC = false
-		hp.colorReaction = true
 		self.Health = hp
-		
-		-- Power Properties
-		pp.colorTapping = false
-		pp.colorDisconnected = true
-		pp.colorPower = true
 		self.Power = pp
 		
 		self.TaggedStrings = {name, hpv, hpp}
@@ -428,19 +415,7 @@ local func = function(settings, self, unit)
 		name:SetJustifyH("CENTER")
 		name:SetText("[verbosename]")
 		
-		-- Health Properties
-		hp.colorTapping = true
-		hp.colorHappiness = true
-		hp.colorDisconnected = true
-		hp.colorClass = true
-		hp.colorClassNPC = false
-		hp.colorReaction = true
 		self.Health = hp
-		
-		-- Power Properties
-		pp.colorTapping = false
-		pp.colorDisconnected = true
-		pp.colorPower = true
 		self.Power = pp
 		
 		self.TaggedStrings = {name}
@@ -475,19 +450,7 @@ local func = function(settings, self, unit)
 		auras.numDebuffs = 3
 		self.Auras = auras
 		
-		-- Health Properties
-		hp.colorTapping = true
-		hp.colorHappiness = true
-		hp.colorDisconnected = true
-		hp.colorClass = true
-		hp.colorClassNPC = false
-		hp.colorReaction = true
 		self.Health = hp
-		
-		-- Power Properties
-		pp.colorTapping = false
-		pp.colorDisconnected = true
-		pp.colorPower = true
 		self.Power = pp
 		
 		self.TaggedStrings = {name, hpp}
@@ -528,19 +491,7 @@ local func = function(settings, self, unit)
 		self.inRangeAlpha = 1
 		self.outsideRangeAlpha = .5
 		
-		-- Health Properties
-		hp.colorTapping = true
-		hp.colorHappiness = true
-		hp.colorDisconnected = true
-		hp.colorClass = true
-		hp.colorClassNPC = false
-		hp.colorReaction = true
 		self.Health = hp
-		
-		-- Power Properties
-		pp.colorTapping = false
-		pp.colorDisconnected = true
-		pp.colorPower = true
 		self.Power = pp
 		
 		self.TaggedStrings = {name, hpd}
