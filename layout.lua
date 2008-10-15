@@ -72,31 +72,23 @@ local UnitCreatureType = UnitCreatureType
 
 -- Custom colors --------------------------------------------------------------
 
-local RAID_CLASS_COLORS = {
-	["DRUID"]   = { r = 255/255, g = 124/255, b = 10/255 },
-	["HUNTER"]  = { r = 163/255, g = 251/255, b = 131/255 },
-	["MAGE"]    = { r = 123/255, g = 203/255, b = 254/255 },
-	["PALADIN"] = { r = 245/255, g = 137/255, b = 186/255 },
-	["PRIEST"]  = { r = 194/255, g = 252/255, b = 254/255 },
-	["ROGUE"]   = { r = 255/255, g = 241/255, b = 106/255 },
-	["SHAMAN"]  = { r = 0/255,   g = 254/255, b = 255/255 },	-- Caith's Shaman color
-	--["SHAMAN"]  = { r = 6/255,   g = 60/255,  b = 188/255 },	-- More traditional Shaman blue
-	["WARLOCK"] = { r = 187/255, g = 162/255, b = 254/255 },
-	["WARRIOR"] = { r = 210/255, g = 188/255, b = 149/255 },
+oUF.colors.class = {
+	["DRUID"]   = { 255/255, 124/255, 10/255 },
+	["HUNTER"]  = { 163/255, 251/255, 131/255 },
+	["MAGE"]    = { 123/255, 203/255, 254/255 },
+	["PALADIN"] = { 245/255, 137/255, 186/255 },
+	["PRIEST"]  = { 194/255, 252/255, 254/255 },
+	["ROGUE"]   = { 255/255, 241/255, 106/255 },
+	["SHAMAN"]  = { 0/255,   254/255, 255/255 },	-- Caith's Shaman color
+	["SHAMAN"]  = { 6/255,   60/255,  188/255 },	-- More traditional Shaman blue
+	["WARLOCK"] = { 187/255, 162/255, 254/255 },
+	["WARRIOR"] = { 210/255, 188/255, 149/255 },
 }
 
 local health = {
 	[0] = { r = 255/255, g = 66/255,  b = 42/255 }, -- Red
 	[1] = { r = 195/255, g = 252/255, b = 0/255 },  -- Yellow-ish
 	[2] = { r = 34/255,  g = 250/255, b = 42/255 }, -- Green
-}
-
-local power = {
-	[0] = { r = 146/255, g = 196/255, b = 249/255 }, -- Mana
-	[1] = { r = 160/255, g = 96/255,  b = 97/255  }, -- Rage
-	[2] = { r = 202/255, g = 181/255, b = 126/255 }, -- Focus
-	[3] = { r = 228/255, g = 218/255, b = 167/255 }, -- Energy
-	[4] = { r = 0,       g = 1,       b = 1}         -- Focus
 }
 
 local UnitReactionColor = {
@@ -380,7 +372,7 @@ local function createBarFrame(parent, height)
 end
 local function createInfoBarFrame(parent)
 	local bar = createBarFrame(parent, 17)
-	--bar:SetStatusBarColor(1, 1, 1, 0.1)
+	bar:SetStatusBarColor(1, 1, 1, 0.1)
 	bar:SetPoint("BOTTOM", parent, "BOTTOM", 0, 0)
 	
 	return bar
