@@ -14,7 +14,7 @@ local statusbarTexture, font
 local borderTexture = "Interface\\AddOns\\oUF_Tsigo\\media\\border"
 local fontSize = 16
 
-local LSM = LibStub("LibSharedMedia-3.0", true)
+--local LSM = LibStub("LibSharedMedia-3.0", true)
 if LSM then
 	statusbarTexture = LSM:Fetch("statusbar", "Armory")
 	font = LSM:Fetch("font", "oUF_Rabbit")
@@ -435,18 +435,28 @@ local function createPowerSpark(parent)
 end
 
 local function func(settings, self, unit)
+	self.unit = unit
 	self.menu = menu
+	
+	self:SetScript("OnEnter", UnitFrame_OnEnter)
+	self:SetScript("OnLeave", UnitFrame_OnLeave)
+	
+	self:RegisterForClicks("anyup")
+	self:SetAttribute("*type2", "menu")
+	
+	--[[
 	self:EnableMouse(true)
 	self:SetScript("OnEnter", UnitFrame_OnEnter)
 	self:SetScript("OnLeave", UnitFrame_OnLeave)
 	self:RegisterForClicks("anyup")
 	self:SetAttribute("*type2", "menu")
+	]]
 	
 	-- Player ---------------------------------------------
 	if unit == 'player' then
 		-- Dimensions
-		self:SetWidth(250)
-		self:SetHeight(49)
+		--self:SetWidth(250)
+		--self:SetHeight(49)
 		
 		self.UNIT_NAME_UPDATE = updateName		-- Name
 		local ib = createInfoBarFrame(self)		-- Info Bar
@@ -673,43 +683,72 @@ local function func(settings, self, unit)
 	return self
 end
 
-oUF:RegisterStyle("tsigo", setmetatable({}, {__call = func}))
+oUF:RegisterStyle("tsigo", setmetatable({
+	["initial-width"] = 250,
+	["initial-height"] = 49,
+}, {__call = func}))
+
+oUF:RegisterStyle("tsigo_Small", setmetatable({
+	["initial-width"] = 150,
+	["initial-height"] = 37,
+}, {__call = func}))
+
+oUF:RegisterStyle("tsigo_Party", setmetatable({
+	["initial-width"] = 200,
+	["initial-height"] = 20,
+	["size"] = 'party',
+}, {__call = func}))
+
+oUF:RegisterStyle("tsigo_PartyPet", setmetatable({
+	["initial-width"] = 200,
+	["initial-height"] = 20,
+	["size"] = 'partypet',
+}, {__call = func}))
+
+-- ----------------------------------------------------------------------------
+-- Cluster
+-- ----------------------------------------------------------------------------
+
 oUF:SetActiveStyle("tsigo")
 
 -- Player / Pet
-local player = oUF:Spawn("player", "oUF_Player")
+local player = oUF:Spawn("player")
 player:SetPoint("BOTTOM", -225, 65)
 --local pet = oUF:Spawn("pet", "oUF_Pet")
 --pet:SetPoint("TOPLEFT", player, "BOTTOMLEFT", 0, -8)
 
 -- Target
-local target = oUF:Spawn("target", "oUF_Target")
+local target = oUF:Spawn("target")
 target:SetPoint("BOTTOM", 225, 65)
 
+oUF:SetActiveStyle("tsigo_Small")
+
 -- TargetTarget
-local tot = oUF:Spawn("targettarget", "oUF_TargetTarget")
+local tot = oUF:Spawn("targettarget")
 tot:SetPoint("BOTTOM", 0, 65)
 
+oUF:SetActiveStyle("tsigo_Party")
+
 -- Focus
-local focus = oUF:Spawn("focus", "oUF_Focus")
+local focus = oUF:Spawn("focus")
 focus:SetPoint("BOTTOMRIGHT", player, "TOPLEFT", -10, 75)
 
-oUF:RegisterStyle("Tsigo_Party", setmetatable({
-	["initial-width"] = 200,
-	["initial-height"] = 20,
-}, {__call = func}))
-
--- Party / Party Pets
-oUF:SetActiveStyle("Tsigo_Party")
+-- Party
 local party = oUF:Spawn("header", "oUF_Party")
 party:SetPoint("BOTTOMLEFT", target, "TOPRIGHT", 15, 75)
 party:SetAttribute("yOffset", -20)
 party:SetAttribute("showParty", true)
+party:Show()
+
+-- Party Pets
+oUF:SetActiveStyle("tsigo_PartyPet")
 local partypet = oUF:Spawn("header", "oUF_PartyPet", true)
 partypet:SetPoint("BOTTOM", party, "TOP", 0, 20)
 partypet:SetAttribute("yOffset", -20)
 partypet:SetAttribute("showParty", true)
+partypet:Show()
 
+--[[
 local toggleParty = CreateFrame("Frame")
 toggleParty:SetScript("OnEvent", function(self)
 	if InCombatLockdown() then 
@@ -731,3 +770,4 @@ toggleParty:RegisterEvent("PARTY_MEMBERS_CHANGED")
 toggleParty:RegisterEvent("PARTY_LEADER_CHANGED")
 toggleParty:RegisterEvent("RAID_ROSTER_UPDATE")
 toggleParty:RegisterEvent("PLAYER_LOGIN")
+]]
