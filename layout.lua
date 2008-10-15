@@ -162,14 +162,14 @@ oUF.Tags["[verbosename]"] = function(u)
 		local race = UnitRace(u) or UnitCreatureType(u) or ''
 		return name:format(level, color[1] * 255, color[2] * 255, color[3] * 255, n, race)
 	elseif u == "targettarget" then
-		local n = UnitName(u)
+		local n = UnitName(u) or ''
 		if n == playerName then
 			return "|cffFF0000<< You >>|r"
 		else
 			return name:format('', color[1] * 255, color[2] * 255, color[3] * 255, n, '')
 		end
 	else
-		local n = UnitName(u)
+		local n = UnitName(u) or ''
 		local level = UnitLevel(u)
 		return name:format(level, color[1] * 255, color[2] * 255, color[3] * 255, n, '')
 	end
@@ -568,7 +568,7 @@ local func = function(settings, self, unit)
 		hpp:SetPoint("RIGHT", -4, 0)
 		hpp:SetText("[perhpgrad]")
 		
-		-- Auras
+		-- Auras TODO: Fix
 		local auras = CreateFrame("Frame", nil, self)
 		auras.size = self:GetWidth() / 8
 		auras:SetHeight(auras.size * 4)
@@ -579,7 +579,7 @@ local func = function(settings, self, unit)
 		auras.gap = true
 		self.Auras = auras
 		
-		-- Raid Icon
+		-- Raid Icon TODO: Test
 		local ricon = self:CreateTexture(nil, "OVERLAY")
 		ricon:SetHeight(24)
 		ricon:SetWidth(24)
@@ -587,7 +587,7 @@ local func = function(settings, self, unit)
 		ricon:SetTexture("Interface\\TargetingFrame\\UI-RaidTargetingIcons")
 		self.RaidIcon = ricon
 		
-		-- Combo Points
+		-- Combo Points TODO: Test
 		if playerClass == "ROGUE" or playerClass == "DRUID" then
 			self.CPoints = createString(self, fontSize + 4)
 			self.CPoints:SetPoint("LEFT", self, "RIGHT", 9, 3)
@@ -612,14 +612,9 @@ local func = function(settings, self, unit)
 		
 		self.TaggedStrings = {name, hpv, hpp}
 		
-		self.PostCreateAuraIcon = auraIcon
-	--[[
+		--self.PostCreateAuraIcon = auraIcon
 	-- TargetTarget ---------------------------------------
 	elseif unit == 'targettarget' then
-		-- Dimensions
-		self:SetWidth(150)
-		self:SetHeight(37)
-		
 		local ib = createInfoBarFrame(self)			-- Info Bar
 		local hp = createHealthBarFrame(self)		-- Health Bar
 		local pp = createPowerBarFrame(hp)			-- Power Bar
@@ -633,16 +628,25 @@ local func = function(settings, self, unit)
 		local name = createString(ib, fontSize)
 		name:SetPoint("CENTER", 0, 2)
 		name:SetJustifyH("CENTER")
+		name:SetText("[verbosename]")
 		
-		-- Properties
-		self.Name = name
+		-- Health Properties
+		hp.colorTapping = true
+		hp.colorHappiness = true
+		hp.colorDisconnected = true
+		hp.colorClass = true
+		hp.colorClassNPC = false
+		hp.colorReaction = true
 		self.Health = hp
+		
+		-- Power Properties
+		pp.colorTapping = false
+		pp.colorDisconnected = true
+		pp.colorPower = true
 		self.Power = pp
 		
-		self.UNIT_NAME_UPDATE = updateName
-		self.OverrideUpdateHealth = updateHealth
-		self.OverrideUpdatePower = updatePower
-		
+		self.TaggedStrings = {name}
+	--[[
 	-- Focus ----------------------------------------------
 	elseif unit == "focus" then
 		-- Dimensions
