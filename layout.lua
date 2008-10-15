@@ -85,6 +85,14 @@ oUF.colors.class = {
 	["WARRIOR"] = { 210/255, 188/255, 149/255 },
 }
 
+oUF.colors.power = {
+	['MANA'] = { 146/255, 196/255, 249/255 }, -- Mana
+	['RAGE'] = { 160/255, 96/255,  97/255  }, -- Rage
+	['FOCUS'] = { 202/255, 181/255, 126/255 }, -- Focus
+	['ENERGY'] = { 228/255, 218/255, 167/255 }, -- Energy
+	['FOCUS'] = { 0, 1, 1} -- Focus
+}
+
 local health = {
 	[0] = { r = 255/255, g = 66/255,  b = 42/255 }, -- Red
 	[1] = { r = 195/255, g = 252/255, b = 0/255 },  -- Yellow-ish
@@ -100,14 +108,6 @@ local UnitReactionColor = {
 	[6] = { 75/255,  175/255, 76/255 }, -- Honored
 	[7] = { 75/255,  175/255, 76/255 }, -- Revered
 	[8] = { 75/255,  175/255, 76/255 }, -- Exalted
-}
-
-oUF.colors.power = {
-	['MANA'] = { 146/255, 196/255, 249/255 }, -- Mana
-	['RAGE'] = { 160/255, 96/255,  97/255  }, -- Rage
-	['FOCUS'] = { 202/255, 181/255, 126/255 }, -- Focus
-	['ENERGY'] = { 228/255, 218/255, 167/255 }, -- Energy
-	['FOCUS'] = { 0, 1, 1} -- Focus
 }
 
 -- ----------------------------------------------------------------------------
@@ -175,186 +175,9 @@ oUF.Tags["[verbosename]"] = function(u)
 	end
 end
 
--- ----------------------------------------------------------------------------
--- Name Display
--- ----------------------------------------------------------------------------
-
 --[[
 local grey = {0.5, 0.5, 0.5}
 local white = {1, 1, 1}
-
--- ----------------------------------------------------------------------------
--- Health / Power Formats
--- ----------------------------------------------------------------------------
-
-local barFormatMinMax = "%d | %d"											  -- 1234 | 5678
-local barFormatMinMax_Health = "|cff00FF00%d|r |cffFFFFFF|||r |cff395A09%d|r" -- 1234 | 5678 [colored green]
-local barFormatMinMax_Power = "|cff5EAEF7%d|r |cffFFFFFF|||r |cff063C82%d|r"  -- 1234 | 5678 [colored blue]
-local barFormatPerc = "%d%%"												  -- 100%
-local barFormatPerc_Health = "|cff%02x%02x%02x%s%%|r"						  -- 100% [colored gradient]
-local barFormatPercMinMax = barFormatPerc.." "..barFormatMinMax				  -- 100% 1234 | 5678
-local barFormatDeficit = "|cffff8080%d|r"									  -- -1234 [colored red]
-
-local function fmt_standard(bartype, txt, min, max)
-	txt:SetFormattedText(barFormatMinMax, min, max)
-end
-local function fmt_perc(bartype, txt, min, max)
-	local value = floor((min/max) * 100)
-	local text = ''
-	
-	if bartype == 'health' and value < 100 then
-		-- Color health percent value in a gradient
-		local r, g, b = ColorGradient(min/max, -- Function expects a decimal
-			health[0].r, health[0].g, health[0].b,
-			health[1].r, health[1].g, health[1].b,
-			health[2].r, health[2].g, health[2].b
-		)
-		text = barFormatPerc_Health:format(r * 255, g * 255, b * 255, value)
-	elseif value < 100 then
-		text = barFormatPerc:format(value)
-	else
-		text = ''
-	end
-	
-	txt:SetText(text)
-end
-local function fmt_full(bartype, txt, min, max)
-	local format = bartype == 'health' and barFormatMinMax_Health or barFormatMinMax_Power
-	txt:SetFormattedText(format, min, max)
-end
-local function fmt_deficit(bartype, txt, min, max)
-	local deficit = min - max
-	if deficit < 0 then
-		txt:SetFormattedText(barFormatDeficit, deficit)
-	else
-		txt:SetText('')
-	end
-end
-local function fmt_percminmax(bartype, txt, min, max)
-	txt:SetFormattedText(barFormatPercMinMax, floor(min/max*100), min, max)
-end
-
-local fmtmeta = { __index = function(self, key)
-	if type(key) == "nil" then return nil end
-	if not rawget(self, key) then
-		rawset(self, key, fmt_standard)
-		return self[key]
-	end
-end}
-local formats = setmetatable({}, { 
-	__index = function(self, key)
-		if type(key) == "nil" then return nil end
-		if not rawget(self, key) then
-			if key:find("raidpet%d") then self[key] = self.raidpet
-			elseif key:find("raidtarget%d") then self[key] = self.raidtarget
-			elseif key:find("raid%d") then self[key] = self.raid
-			elseif key:find("partypet%d") then self[key] = self.partypet
-			elseif key:find("party%dtarget") then self[key] = self.partytarget
-			elseif key:find("party%d") then self[key] = self.party
-			else
-				self[key] = {}
-			end
-		end
-		return self[key]
-	end,
-	__newindex = function(self, key, value)
-		rawset(self, key, setmetatable(value, fmtmeta))
-	end,
-})
-
-formats.player.health = fmt_full
-formats.player.power = fmt_full
-
-formats.target.health = fmt_full
-formats.target.health_perc = fmt_perc
-
-formats.targettarget.health = fmt_perc
-formats.focus.health = fmt_perc
-
-formats.party.health = fmt_deficit
-formats.partypet.health = fmt_deficit
-
--- ----------------------------------------------------------------------------
--- Health Updater
--- ----------------------------------------------------------------------------
-
-local function updateHealth(self, event, unit, bar, min, max)
-    if bar.percent then bar.percent:SetText("") end
-    if bar.value then bar.value:SetText("") end
-    
-	if UnitIsDead(unit) then
-		--bar.value:SetText("Dead")
-		if bar.percent then bar.percent:SetText("Dead") end
-		if bar.value then bar.value:SetTextColor(.5, .5, .5) end
-	elseif UnitIsGhost(unit) then
-		if bar.value then
-			bar.value:SetText("Ghost")
-			bar.value:SetTextColor(.5, .5, .5)
-		end
-	elseif not UnitIsConnected(unit) then
-		if bar.value then
-			bar.value:SetText("Off")
-			bar.value:SetTextColor(.5, .5, .5)
-		end
-	else
-		local curhp, maxhp = min, max
-		
-		if bar.value then
-			formats[unit].health('health', bar.value, curhp, maxhp)
-		end
-		
-		-- Update percent value for target
-		if unit == "target" and bar.percent then
-			formats[unit].health_perc('health', bar.percent, min, max)
-		end
-		
-		if UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit) then
-			bar:SetStatusBarColor(.5, .5, .3)
-		else
-			local color
-			if UnitIsPlayer(unit) then
-				local _, c = UnitClass(unit)
-				color = RAID_CLASS_COLORS[c]
-			else
-				color = UnitReactionColor[UnitReaction(unit, "player")]
-			end
-
-			--local color = UnitIsFriend(unit, "player") and UnitIsPlayer(unit) and RAID_CLASS_COLORS[c] or UnitReactionColor[UnitReaction(unit, "player")]
-			if color then
-				bar:SetStatusBarColor(color.r, color.g, color.b)
-				
-				if bar.bg then
-					bar.bg:SetVertexColor(color.r, color.g, color.b, 0.3)
-				end
-			end
-			self:UNIT_NAME_UPDATE(event, unit)
-		end
-	end
-end
-
--- ----------------------------------------------------------------------------
--- Power Updater
--- ----------------------------------------------------------------------------
-
-local function updatePower(self, event, unit, bar, min, max)
-	if UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit) or not UnitIsConnected(unit) then
-		bar:SetStatusBarColor(.6, .6, .6)
-	else
-		if max == 0 or UnitIsDead(unit) or UnitIsGhost(unit) or not UnitIsConnected(unit) then
-			bar:SetValue(0)
-			if bar.value then
-				bar.value:SetText()
-			end
-		elseif bar.value then
-			formats[unit].power('power', bar.value, min, max)
-		end
-		
-		local color = power[UnitPowerType(unit)]
-		if color then
-			bar:SetStatusBarColor(color.r, color.g, color.b)
-		end
-	end
-end
 ]]
 
 local function auraIcon(self, button)
