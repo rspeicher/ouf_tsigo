@@ -371,9 +371,9 @@ local func = function(settings, self, unit)
 		auras:SetHeight(auras.size * 4)
 		auras:SetWidth(self:GetWidth())
 		auras:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 2)
-		auras.numBuffs = 40
-		auras.numDebuffs = 40
-		auras.gap = true
+		--auras.numBuffs = 40
+		--auras.numDebuffs = 40
+		--auras.gap = true
 		self.Auras = auras
 		
 		-- Raid Icon TODO: Test
