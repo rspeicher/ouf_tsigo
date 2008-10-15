@@ -539,9 +539,7 @@ local func = function(settings, self, unit)
 		self.Power = pp
 
 		self.TaggedStrings = {hpv, ppv}
-		--self.Spark = createPowerSpark(pp)
-		--self.OverrideUpdateHealth = updateHealth
-		--self.OverrideUpdatePower = updatePower
+		self.Spark = createPowerSpark(pp)
 	--[[
 	-- Target ---------------------------------------------
 	elseif unit == 'target' then
