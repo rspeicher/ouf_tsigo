@@ -445,13 +445,8 @@ local func = function(settings, self, unit)
 		self.Power = pp
 		
 		self.TaggedStrings = {name}
-	--[[
 	-- Focus ----------------------------------------------
 	elseif unit == "focus" then
-		-- Dimensions
-		self:SetWidth(200)
-		self:SetHeight(20)
-		
 		local hp = createHealthBarFrame(self)		-- Health Bar
 		local pp = createPowerBarFrame(hp)			-- Power Bar
 		
@@ -462,10 +457,12 @@ local func = function(settings, self, unit)
 		-- Name
 		local name = createString(self, fontSize)
 		name:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 2)
+		name:SetText("[verbosename]")
 		
 		-- Health Percent
 		local hpp = createString(hp, fontSize-2)
 		hpp:SetPoint("RIGHT", -4, 2)
+		hpp:SetText("[perhpgrad]")
 		
 		-- Auras
 		local auras = CreateFrame("Frame", nil, self)
@@ -477,26 +474,27 @@ local func = function(settings, self, unit)
 		auras.initialAnchor = "TOPLEFT"
 		auras.numBuffs = 1
 		auras.numDebuffs = 3
-		
-		-- Properties
-		self.Name = name
-		self.Health = hp
-		self.Power = pp
 		self.Auras = auras
 		
-		hp.percent = hpp
+		-- Health Properties
+		hp.colorTapping = true
+		hp.colorHappiness = true
+		hp.colorDisconnected = true
+		hp.colorClass = true
+		hp.colorClassNPC = false
+		hp.colorReaction = true
+		self.Health = hp
 		
-		self.UNIT_NAME_UPDATE = updateName
-		self.OverrideUpdateHealth = updateHealth
-		self.OverrideUpdatePower = updatePower
+		-- Power Properties
+		pp.colorTapping = false
+		pp.colorDisconnected = true
+		pp.colorPower = true
+		self.Power = pp
+		
+		self.TaggedStrings = {name, hpp}
 		self.PostCreateAuraIcon = auraIcon
-	
 	-- Party ----------------------------------------------
 	elseif not unit then
-		-- Dimensions
-		--self:SetWidth(200)
-		--self:SetHeight(20)
-		
 		local hp = createHealthBarFrame(self)		-- Health Bar
 		local pp = createPowerBarFrame(hp)			-- Power Bar
 		
@@ -507,10 +505,12 @@ local func = function(settings, self, unit)
 		-- Name
 		local name = createString(self, fontSize)
 		name:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 2)
+		name:SetText("[verbosename]")
 		
 		-- Health Deficit
 		local hpd = createString(hp, fontSize-2)
 		hpd:SetPoint("RIGHT", -4, 2)
+		hpd:SetText("[missinghp]")
 		
 		-- Auras (Debuffs only)
 		local debuffs = CreateFrame("Frame", nil, self)
@@ -521,25 +521,30 @@ local func = function(settings, self, unit)
 		debuffs:SetPoint("LEFT", self, "RIGHT", 4, 0)
 		debuffs.initialAnchor = "TOPLEFT"
 		debuffs.num = 4
+		self.Debuffs = debuffs
+		self.PostCreateAuraIcon = auraIcon
 		
 		-- Range Filtering
 		self.Range = true
 		self.inRangeAlpha = 1
 		self.outsideRangeAlpha = .5
 		
-		-- Properties
-		self.Name = name
+		-- Health Properties
+		hp.colorTapping = true
+		hp.colorHappiness = true
+		hp.colorDisconnected = true
+		hp.colorClass = true
+		hp.colorClassNPC = false
+		hp.colorReaction = true
 		self.Health = hp
+		
+		-- Power Properties
+		pp.colorTapping = false
+		pp.colorDisconnected = true
+		pp.colorPower = true
 		self.Power = pp
-		self.Debuffs = debuffs
 		
-		hp.value = hpd
-		
-		self.UNIT_NAME_UPDATE = updateName
-		self.OverrideUpdateHealth = updateHealth
-		self.OverrideUpdatePower = updatePower
-		self.PostCreateAuraIcon = auraIcon
-	]]
+		self.TaggedStrings = {name, hpd}
 	end
 
 	--self:SetFrameStrata("BACKGROUND")
