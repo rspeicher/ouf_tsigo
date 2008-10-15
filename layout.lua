@@ -303,32 +303,6 @@ local func = function(settings, self, unit)
 	self:SetBackdrop(backdrop)
 	self:SetBackdropColor(0, 0, 0, .9)
 	
-	--[[ tek
-	-- Health bar
-	local hp = CreateFrame("StatusBar")
-	hp:SetWidth(width)
-	hp:SetHeight(bheight)
-	hp:SetStatusBarTexture(statusbarTexture)
-	
-	hp:SetParent(self)
-	hp:SetStatusBarColor(0, 0.5, 0)
-	hp:SetPoint("TOP", 0, 1)
-	hp:SetPoint("LEFT", -1, 0)
-	hp:SetPoint("RIGHT", 1, 0)
-	
-	self.Health = hp
-	--self.PostUpdateHealth = PostUpdateHealth
-	
-	local hpv = hp:CreateFontString(nil, "OVERLAY")
-	hpv:SetFont(font, fontSize)
-	hpv:SetText("[dead][offline][tsihp]")
-	hpv:SetPoint("RIGHT", -4, 2)
-	hpv:SetShadowColor(0, 0, 0, 0.9)
-	hpv:SetShadowOffset(1, -1)
-	
-	self.TaggedStrings = {hpv}
-	]]
-	
 	-- Player ---------------------------------------------
 	if unit == 'player' then
 		local ib = createInfoBarFrame(self)		-- Info Bar
