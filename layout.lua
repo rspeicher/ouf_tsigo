@@ -114,13 +114,25 @@ oUF.colors.power = {
 -- Custom tags
 -- ----------------------------------------------------------------------------
 
+local barFormatMinMax = "%d | %d"											  -- 1234 | 5678
+local verbosehp = "|cff00FF00%d|r |cffFFFFFF|||r |cff395A09%d|r" -- 1234 | 5678 [colored green]
+local verbosepp = "|cff5EAEF7%d|r |cffFFFFFF|||r |cff063C82%d|r"  -- 1234 | 5678 [colored blue]
+local barFormatPerc = "%d%%"												  -- 100%
+local barFormatPerc_Health = "|cff%02x%02x%02x%s%%|r"						  -- 100% [colored gradient]
+local barFormatPercMinMax = barFormatPerc.." "..barFormatMinMax				  -- 100% 1234 | 5678
+local barFormatDeficit = "|cffff8080%d|r"									  -- -1234 [colored red]
+
+oUF.TagEvents["[verbosehp]"] = "UNIT_HEALTH UNIT_MAXHEALTH"
+oUF.TagEvents["[verbosehp]"] = "UNIT_ENERGY UNIT_FOCUS UNIT_MANA UNIT_RAGE"
+
+oUF.Tags["[verbosehp]"] = function(u) local c, m = UnitHealth(u), UnitHealthMax(u) return (c <= 1 or not UnitIsConnected(u)) and "" or verbosehp:format(c, m) end
+oUF.Tags["[verbosepp]"] = function(u) local c, m = UnitMana(u), UnitManaMax(u) return (c <= 1 or not UnitIsConnected(u)) and "" or verbosepp:format(c, m) end
+
 --[[
 oUF.TagEvents["[tsihp]"] = "UNIT_HEALTH UNIT_MAXHEALTH"
 oUF.Tags["[tsimaxhp]"] = function(u) local m = UnitHealthMax(u) return "|cff395A09" .. m .. "|r" end
 oUF.Tags["[tsihp]"] = function(u) local c, m = UnitHealth(u), UnitHealthMax(u) return (c <= 1 or not UnitIsConnected(u)) and "" or c >= m and oUF.Tags["[tsimaxhp]"](u)
 	or UnitCanAttack("player", u) and oUF.Tags["[perhp]"](u).."%" or "-"..oUF.Tags["[missinghp]"](u) end
-	
-local barFormatMinMax_Health = "|cff00FF00%d|r |cffFFFFFF|||r |cff395A09%d|r" -- 1234 | 5678 [colored green]
 ]]
 
 -- ----------------------------------------------------------------------------
@@ -504,12 +516,12 @@ local func = function(settings, self, unit)
 		-- Health Values
 		local hpv = createString(ib, fontSize)
 		hpv:SetPoint("RIGHT", -4, 2)
-		hpv:SetText("[dead][offline][curhp] | [maxhp]")
+		hpv:SetText("[dead][offline][verbosehp]")
 		
 		-- Power Values
 		local ppv = createString(ib, fontSize)
 		ppv:SetPoint("LEFT", 4, 2)
-		ppv:SetText("[curpp] | [maxpp]")
+		ppv:SetText("[verbosepp]")
 		
 		-- Health Properties
 		hp.colorTapping = true
