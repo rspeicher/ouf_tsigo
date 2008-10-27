@@ -122,8 +122,8 @@ local perhp     = "|cff%02x%02x%02x%s%%|r"						  -- 100% [colored gradient]
 
 oUF.TagEvents["[verbosehp]"]   = "UNIT_HEALTH UNIT_MAXHEALTH"
 oUF.TagEvents["[perhpgrad]"]   = "UNIT_HEALTH UNIT_MAXHEALTH"
-oUF.TagEvents["[verbosehp]"]   = "UNIT_ENERGY UNIT_FOCUS UNIT_MANA UNIT_RAGE"
-oUF.TagEvents["[verbosename]"] = "UNIT_NAME_UPDATE"
+oUF.TagEvents["[verbosepp]"]   = "UNIT_MAXENERGY UNIT_MAXFOCUS UNIT_MAXMANA UNIT_MAXRAGE UNIT_ENERGY UNIT_FOCUS UNIT_MANA UNIT_RAGE"
+oUF.TagEvents["[verbosename]"] = "UNIT_NAME_UPDATE UNIT_HEALTH"
 
 oUF.Tags["[verbosehp]"] = function(u) local c, m = UnitHealth(u), UnitHealthMax(u) return (c <= 1 or not UnitIsConnected(u)) and "" or verbosehp:format(c, m) end
 oUF.Tags["[verbosepp]"] = function(u) local c, m = UnitMana(u), UnitManaMax(u) return (c <= 1 or not UnitIsConnected(u)) and "" or verbosepp:format(c, m) end
@@ -413,7 +413,7 @@ local func = function(settings, self, unit)
 		local name = createString(ib, fontSize)
 		name:SetPoint("CENTER", 0, 2)
 		name:SetJustifyH("CENTER")
-		name:SetText("[verbosename]")
+		name:SetText("[name]")
 		
 		self.Health = hp
 		self.Power = pp
@@ -547,7 +547,7 @@ party:SetPoint("BOTTOMLEFT", target, "TOPRIGHT", 15, 75)
 party:SetAttribute("yOffset", pheight - (pheight * 2)) -- Grow up (does -pheight work?)
 party:SetAttribute("showParty", true)
 
-local partypet = oUF:Spawn("header", "oUF_PartyPet", true)
+local partypet = oUF:Spawn("header", "oUF_PartyPets", true)
 partypet:SetPoint("BOTTOM", party, "TOP", 0, pheight)
 partypet:SetAttribute("yOffset", pheight - (pheight * 2)) -- Grow up (does -pheight work?)
 partypet:SetAttribute("showParty", true)
