@@ -75,16 +75,17 @@ local UnitCreatureType = UnitCreatureType
 -- Custom colors --------------------------------------------------------------
 
 oUF.colors.class = {
-	["DRUID"]   = { 255/255, 124/255, 10/255 },
-	["HUNTER"]  = { 163/255, 251/255, 131/255 },
-	["MAGE"]    = { 123/255, 203/255, 254/255 },
-	["PALADIN"] = { 245/255, 137/255, 186/255 },
-	["PRIEST"]  = { 194/255, 252/255, 254/255 },
-	["ROGUE"]   = { 255/255, 241/255, 106/255 },
-	["SHAMAN"]  = { 0/255,   254/255, 255/255 },	-- Caith's Shaman color
-	--["SHAMAN"]  = { 6/255,   60/255,  188/255 },	-- More traditional Shaman blue
-	["WARLOCK"] = { 187/255, 162/255, 254/255 },
-	["WARRIOR"] = { 210/255, 188/255, 149/255 },
+    ["DEATHKNIGHT"] = { 196/255, 30/255,  59/255 },
+	["DRUID"]       = { 255/255, 124/255, 10/255 },
+	["HUNTER"]      = { 163/255, 251/255, 131/255 },
+	["MAGE"]        = { 123/255, 203/255, 254/255 },
+	["PALADIN"]     = { 245/255, 137/255, 186/255 },
+	["PRIEST"]      = { 194/255, 252/255, 254/255 },
+	["ROGUE"]       = { 255/255, 241/255, 106/255 },
+	["SHAMAN"]      = { 0/255,   254/255, 255/255 },	-- Caith's Shaman color
+	--["SHAMAN"]    = { 6/255,   60/255,  188/255 },	-- More traditional Shaman blue
+	["WARLOCK"]     = { 187/255, 162/255, 254/255 },
+	["WARRIOR"]     = { 210/255, 188/255, 149/255 },
 }
 
 oUF.colors.power = {
@@ -123,7 +124,7 @@ local perhp     = "|cff%02x%02x%02x%s%%|r"						  -- 100% [colored gradient]
 oUF.TagEvents["[verbosehp]"]   = "UNIT_HEALTH UNIT_MAXHEALTH"
 oUF.TagEvents["[perhpgrad]"]   = "UNIT_HEALTH UNIT_MAXHEALTH"
 oUF.TagEvents["[verbosepp]"]   = "UNIT_MAXENERGY UNIT_MAXFOCUS UNIT_MAXMANA UNIT_MAXRAGE UNIT_ENERGY UNIT_FOCUS UNIT_MANA UNIT_RAGE"
-oUF.TagEvents["[verbosename]"] = "UNIT_NAME_UPDATE UNIT_HEALTH"
+oUF.TagEvents["[verbosename]"] = "UNIT_NAME_UPDATE UNIT_HEALTH UNIT_TARGET"
 
 oUF.Tags["[verbosehp]"] = function(u) local c, m = UnitHealth(u), UnitHealthMax(u) return (c <= 1 or not UnitIsConnected(u)) and "" or verbosehp:format(c, m) end
 oUF.Tags["[verbosepp]"] = function(u) local c, m = UnitMana(u), UnitManaMax(u) return (c <= 1 or not UnitIsConnected(u)) and "" or verbosepp:format(c, m) end
@@ -301,7 +302,7 @@ end
 -- Frame sizes
 local width,  height  = 250, 49 -- Player and Target
 local pwidth, pheight = 200, 20 -- Focus, Party and Party Pet
-local twidth, theight = 150, 37 -- Target of Target
+local twidth, theight = 150, 21 -- Target of Target
 
 local func = function(settings, self, unit)
 	self.unit = unit
@@ -400,20 +401,35 @@ local func = function(settings, self, unit)
 		self.TaggedStrings = {name, hpv, hpp}
 	-- TargetTarget ---------------------------------------
 	elseif unit == 'targettarget' then
-		local ib = createInfoBarFrame(self)			-- Info Bar
+		--local ib = createInfoBarFrame(self)			-- Info Bar
 		local hp = createHealthBarFrame(self)		-- Health Bar
 		local pp = createPowerBarFrame(hp)			-- Power Bar
 		
-		ib:SetHeight(14)
+		--ib:SetHeight(14)
 		hp:SetHeight(16)
 		hp.bg:SetHeight(16)
 		pp:SetHeight(4)
 		
 		-- Name
-		local name = createString(ib, fontSize)
+		local name = createString(hp, fontSize)
 		name:SetPoint("CENTER", 0, 2)
 		name:SetJustifyH("CENTER")
 		name:SetText("[name]")
+		
+		self.Health = hp
+		self.Power = pp
+		
+		self.TaggedStrings = {name}
+	-- Pet ---------------------------------------
+	elseif unit == 'pet' or unit == 'vehicle' then
+		--local ib = createInfoBarFrame(self)			-- Info Bar
+		local hp = createHealthBarFrame(self)		-- Health Bar
+		local pp = createPowerBarFrame(hp)			-- Power Bar
+		
+		--ib:SetHeight(14)
+		hp:SetHeight(16)
+		hp.bg:SetHeight(16)
+		pp:SetHeight(4)
 		
 		self.Health = hp
 		self.Power = pp
@@ -532,6 +548,18 @@ oUF:SetActiveStyle("tsigo_ToT")
 
 local tot = oUF:Spawn("targettarget")
 tot:SetPoint("BOTTOM", 0, 65)
+
+local pet = oUF:Spawn("pet")
+pet:SetPoint("BOTTOM", tot, "TOP", 0, 5)
+
+local toggleVehicle = CreateFrame("Frame")
+toggleVehicle:RegisterEvent("UNIT_ENTERED_VEHICLE")
+toggleVehicle:SetScript("OnEvent", function(self, event, arg1)
+	if ( event == "UNIT_ENTERED_VEHICLE" and arg1 == "player" ) then
+		local vehicle = oUF:Spawn("vehicle")
+		vehicle:SetPoint("BOTTOM", tot, "TOP", 0, 5)
+	end
+end)
 
 -- ----------------------------------------------------------------------------
 -- Focus, Party, Party Pets
