@@ -374,7 +374,7 @@ local func = function(settings, self, unit)
 		auras:SetWidth(width)
 		auras:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 2)
 		auras.numBuffs = 40
-		auras.numDebuffs = 40
+		auras.numDebuffs = 32
 		auras.gap = true
 		self.Auras = auras
 		self.PostCreateAuraIcon = auraIcon
@@ -388,12 +388,12 @@ local func = function(settings, self, unit)
 		self.RaidIcon = ricon
 		
 		-- Combo Points
-		if playerClass == "ROGUE" or playerClass == "DRUID" then
+		--if playerClass == "ROGUE" or playerClass == "DRUID" then
 			self.CPoints = createString(self, fontSize + 4)
 			self.CPoints:SetPoint("LEFT", self, "RIGHT", 9, 3)
 			self.CPoints:SetFont(font, 38, "OUTLINE")
 			self.CPoints:SetJustifyH("RIGHT")
-		end
+		--end
 		
 		self.Health = hp
 		self.Power = pp
@@ -552,6 +552,7 @@ tot:SetPoint("BOTTOM", 0, 65)
 local pet = oUF:Spawn("pet")
 pet:SetPoint("BOTTOM", tot, "TOP", 0, 5)
 
+--[[
 local toggleVehicle = CreateFrame("Frame")
 toggleVehicle:RegisterEvent("UNIT_ENTERED_VEHICLE")
 toggleVehicle:SetScript("OnEvent", function(self, event, arg1)
@@ -560,6 +561,7 @@ toggleVehicle:SetScript("OnEvent", function(self, event, arg1)
 		vehicle:SetPoint("BOTTOM", tot, "TOP", 0, 5)
 	end
 end)
+]]
 
 -- ----------------------------------------------------------------------------
 -- Focus, Party, Party Pets
