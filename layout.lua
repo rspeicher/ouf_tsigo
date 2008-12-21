@@ -235,7 +235,7 @@ local function createPowerBarFrame(parent)
 	bar.colorTapping = false
 	bar.colorDisconnected = true
 	bar.colorPower = true
-	bar.frequentUpdates = true
+	--bar.frequentUpdates = true
 	
 	return bar
 end
