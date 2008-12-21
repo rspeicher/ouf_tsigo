@@ -313,7 +313,7 @@ local func = function(settings, self, unit)
 		-- Health Values
 		local hpv = createString(ib, fontSize)
 		hpv:SetPoint("RIGHT", -4, 2)
-		self:Tag(hpv, "[dead][offline][verbosehp]")
+		self:Tag(hpv, "[status][verbosehp]")
 		
 		-- Power Values
 		local ppv = createString(ib, fontSize)
@@ -341,7 +341,7 @@ local func = function(settings, self, unit)
 		-- Health string (absolute)
 		local hpv = createString(ib, fontSize)
 		hpv:SetPoint("RIGHT", -4, 2)
-		self:Tag(hpv, "[verbosehp]")
+		self:Tag(hpv, "[status][verbosehp]")
 		
 		-- Prevent the name from going through the health values
 		name:SetPoint("RIGHT", hpv, "LEFT")
@@ -396,7 +396,7 @@ local func = function(settings, self, unit)
 		local name = createString(hp, fontSize)
 		name:SetPoint("CENTER", 0, 2)
 		name:SetJustifyH("CENTER")
-		self:Tag(name, "[verbosename]")
+		self:Tag(name, "[status][verbosename]")
 		
 		self.Health = hp
 		self.Power = pp
@@ -430,7 +430,7 @@ local func = function(settings, self, unit)
 		-- Health Percent
 		local hpp = createString(hp, fontSize-2)
 		hpp:SetPoint("RIGHT", -4, 2)
-		self:Tag(hpp, "[perhpgrad]")
+		self:Tag(hpp, "[status][perhpgrad]")
 		
 		-- Auras
 		local auras = CreateFrame("Frame", nil, self)
@@ -465,7 +465,7 @@ local func = function(settings, self, unit)
 		-- Health Deficit
 		local hpd = createString(hp, fontSize-2)
 		hpd:SetPoint("RIGHT", -4, 2)
-		self:Tag(hpd, "[missinghp]")
+		self:Tag(hpd, "[status][missinghp]")
 		
 		-- Auras (Debuffs only)
 		local debuffs = CreateFrame("Frame", nil, self)
