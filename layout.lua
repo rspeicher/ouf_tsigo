@@ -39,23 +39,6 @@ local menu = function(self)
 	end
 end
 
-local function ColorGradient(perc, ...)
-	if perc >= 1 then
-		local r, g, b = select(select('#', ...) - 2, ...)
-		return r, g, b
-	elseif perc <= 0 then
-		local r, g, b = ...
-		return r, g, b
-	end
-	
-	local num = select('#', ...) / 3
-
-	local segment, relperc = math.modf(perc*(num-1))
-	local r1, g1, b1, r2, g2, b2 = select((segment*3)+1, ...)
-
-	return r1 + (r2-r1)*relperc, g1 + (g2-g1)*relperc, b1 + (b2-b1)*relperc
-end
-
 local select = select
 --local UnitName = UnitName
 local UnitLevel = UnitLevel
@@ -133,7 +116,7 @@ oUF.Tags["[perhpgrad]"] = function(u)
 
 	if v < 100 and v > 0 then
 		-- Color health percent value in a gradient
-		local r, g, b = ColorGradient(v / 100.00, -- Function expects a decimal
+		local r, g, b = oUF.ColorGradient(v / 100.00, -- Function expects a decimal
 			health[0].r, health[0].g, health[0].b,
 			health[1].r, health[1].g, health[1].b,
 			health[2].r, health[2].g, health[2].b
@@ -421,7 +404,7 @@ local func = function(settings, self, unit)
 		
 		self.TaggedStrings = {name}
 	-- Pet ---------------------------------------
-	elseif unit == 'pet' or unit == 'vehicle' then
+	elseif unit == 'pet' then --or unit == 'vehicle' then
 		--local ib = createInfoBarFrame(self)			-- Info Bar
 		local hp = createHealthBarFrame(self)		-- Health Bar
 		local pp = createPowerBarFrame(hp)			-- Power Bar
@@ -464,7 +447,7 @@ local func = function(settings, self, unit)
 		auras.initialAnchor = "TOPLEFT"
 		auras.numBuffs = 1
 		auras.numDebuffs = 3
-		self.Auras = auras
+		--self.Auras = auras
 		
 		self.Health = hp
 		self.Power = pp
