@@ -396,7 +396,7 @@ local func = function(settings, self, unit)
 		local name = createString(hp, fontSize)
 		name:SetPoint("CENTER", 0, 2)
 		name:SetJustifyH("CENTER")
-		self:Tag(name, "[name]")
+		self:Tag(name, "[verbosename]")
 		
 		self.Health = hp
 		self.Power = pp
@@ -425,7 +425,7 @@ local func = function(settings, self, unit)
 		-- Name
 		local name = createString(self, fontSize)
 		name:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 2)
-		self:Tag(name, "[smartlevel] [name]")
+		self:Tag(name, "[verbosename]")
 		
 		-- Health Percent
 		local hpp = createString(hp, fontSize-2)
