@@ -313,17 +313,16 @@ local func = function(settings, self, unit)
 		-- Health Values
 		local hpv = createString(ib, fontSize)
 		hpv:SetPoint("RIGHT", -4, 2)
-		hpv:SetText("[dead][offline][verbosehp]")
+		self:Tag(hpv, "[dead][offline][verbosehp]")
 		
 		-- Power Values
 		local ppv = createString(ib, fontSize)
 		ppv:SetPoint("LEFT", 4, 2)
-		ppv:SetText("[verbosepp]")
+		self:Tag(ppv, "[verbosepp]")
 		
 		self.Health = hp
 		self.Power = pp
 
-		self.TaggedStrings = {hpv, ppv}
 		self.Spark = createPowerSpark(pp)
 	-- Target ---------------------------------------------
 	elseif unit == 'target' then
@@ -337,12 +336,12 @@ local func = function(settings, self, unit)
 		local name = createString(ib, fontSize)
 		name:SetPoint("LEFT", 4, 2)
 		name:SetJustifyH("LEFT")
-		name:SetText("[verbosename]")
+		self:Tag(name, "[verbosename]")
 		
 		-- Health string (absolute)
 		local hpv = createString(ib, fontSize)
 		hpv:SetPoint("RIGHT", -4, 2)
-		hpv:SetText("[verbosehp]")
+		self:Tag(hpv, "[verbosehp]")
 		
 		-- Prevent the name from going through the health values
 		name:SetPoint("RIGHT", hpv, "LEFT")
@@ -350,7 +349,7 @@ local func = function(settings, self, unit)
 		-- Health string (percentage)
 		local hpp = createString(hp, fontSize + 2)
 		hpp:SetPoint("RIGHT", -4, 0)
-		hpp:SetText("[perhpgrad]")
+		self:Tag(hpp, "[perhpgrad]")
 		
 		-- Auras
 		local auras = CreateFrame("Frame", nil, self)
@@ -382,8 +381,6 @@ local func = function(settings, self, unit)
 		
 		self.Health = hp
 		self.Power = pp
-		
-		self.TaggedStrings = {name, hpv, hpp}
 	-- TargetTarget ---------------------------------------
 	elseif unit == 'targettarget' then
 		--local ib = createInfoBarFrame(self)			-- Info Bar
@@ -399,12 +396,10 @@ local func = function(settings, self, unit)
 		local name = createString(hp, fontSize)
 		name:SetPoint("CENTER", 0, 2)
 		name:SetJustifyH("CENTER")
-		name:SetText("[name]")
+		self:Tag(name, "[name]")
 		
 		self.Health = hp
 		self.Power = pp
-		
-		self.TaggedStrings = {name}
 	-- Pet ---------------------------------------
 	elseif unit == 'pet' then --or unit == 'vehicle' then
 		--local ib = createInfoBarFrame(self)			-- Info Bar
@@ -418,8 +413,6 @@ local func = function(settings, self, unit)
 		
 		self.Health = hp
 		self.Power = pp
-		
-		self.TaggedStrings = {name}
 	-- Focus ----------------------------------------------
 	elseif unit == "focus" then
 		local hp = createHealthBarFrame(self)		-- Health Bar
@@ -432,12 +425,12 @@ local func = function(settings, self, unit)
 		-- Name
 		local name = createString(self, fontSize)
 		name:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 2)
-		name:SetText("[verbosename]")
+		self:Tag(name, "[smartlevel] [name]")
 		
 		-- Health Percent
 		local hpp = createString(hp, fontSize-2)
 		hpp:SetPoint("RIGHT", -4, 2)
-		hpp:SetText("[perhpgrad]")
+		self:Tag(hpp, "[perhpgrad]")
 		
 		-- Auras
 		local auras = CreateFrame("Frame", nil, self)
@@ -453,8 +446,7 @@ local func = function(settings, self, unit)
 		
 		self.Health = hp
 		self.Power = pp
-		
-		self.TaggedStrings = {name, hpp}
+
 		self.PostCreateAuraIcon = auraIcon
 	-- Party ----------------------------------------------
 	elseif not unit then
@@ -468,12 +460,12 @@ local func = function(settings, self, unit)
 		-- Name
 		local name = createString(self, fontSize)
 		name:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 2)
-		name:SetText("[verbosename]")
+		self:Tag(name, "[verbosename]")
 		
 		-- Health Deficit
 		local hpd = createString(hp, fontSize-2)
 		hpd:SetPoint("RIGHT", -4, 2)
-		hpd:SetText("[missinghp]")
+		self:Tag(hpd, "[missinghp]")
 		
 		-- Auras (Debuffs only)
 		local debuffs = CreateFrame("Frame", nil, self)
@@ -494,8 +486,6 @@ local func = function(settings, self, unit)
 		
 		self.Health = hp
 		self.Power = pp
-		
-		self.TaggedStrings = {name, hpd}
 	end
 
 	--self:SetFrameStrata("BACKGROUND")
