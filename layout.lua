@@ -58,7 +58,7 @@ local UnitCreatureType = UnitCreatureType
 -- Custom colors --------------------------------------------------------------
 
 oUF.colors.class = {
-    ["DEATHKNIGHT"] = { 196/255, 30/255,  59/255 },
+	["DEATHKNIGHT"] = { 196/255, 30/255,  59/255 },
 	["DRUID"]       = { 255/255, 124/255, 10/255 },
 	["HUNTER"]      = { 163/255, 251/255, 131/255 },
 	["MAGE"]        = { 123/255, 203/255, 254/255 },
@@ -212,6 +212,7 @@ local function createHealthBarFrame(parent)
 	bar.colorClass = true
 	bar.colorClassNPC = false
 	bar.colorReaction = true
+	bar.frequentUpdates = true
 	
 	local bg = bar:CreateTexture(nil, "ARTWORK")
 	bg:SetHeight(bar:GetHeight())
@@ -234,6 +235,7 @@ local function createPowerBarFrame(parent)
 	bar.colorTapping = false
 	bar.colorDisconnected = true
 	bar.colorPower = true
+	bar.frequentUpdates = true
 	
 	return bar
 end
