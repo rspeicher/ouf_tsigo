@@ -150,7 +150,7 @@ oUF.Tags["[verbosename]"] = function(u)
 	elseif u == "targettarget" then
 		local n = UnitName(u) or ''
 		if n == playerName then
-			return "|cffFF0000<< You >>|r"
+			return "|cffFFFFFF<< You >>|r"
 		else
 			return name:format('', color[1] * 255, color[2] * 255, color[3] * 255, n, '')
 		end
@@ -313,7 +313,7 @@ local func = function(settings, self, unit)
 		-- Health Values
 		local hpv = createString(ib, fontSize)
 		hpv:SetPoint("RIGHT", -4, 2)
-		self:Tag(hpv, "[status][verbosehp]")
+		self:Tag(hpv, "[status] [verbosehp]")
 		
 		-- Power Values
 		local ppv = createString(ib, fontSize)
@@ -341,7 +341,7 @@ local func = function(settings, self, unit)
 		-- Health string (absolute)
 		local hpv = createString(ib, fontSize)
 		hpv:SetPoint("RIGHT", -4, 2)
-		self:Tag(hpv, "[status][verbosehp]")
+		self:Tag(hpv, "[status] [verbosehp]")
 		
 		-- Prevent the name from going through the health values
 		name:SetPoint("RIGHT", hpv, "LEFT")
@@ -396,7 +396,7 @@ local func = function(settings, self, unit)
 		local name = createString(hp, fontSize)
 		name:SetPoint("CENTER", 0, 2)
 		name:SetJustifyH("CENTER")
-		self:Tag(name, "[status][verbosename]")
+		self:Tag(name, "[status] [verbosename]")
 		
 		self.Health = hp
 		self.Power = pp
@@ -430,7 +430,7 @@ local func = function(settings, self, unit)
 		-- Health Percent
 		local hpp = createString(hp, fontSize-2)
 		hpp:SetPoint("RIGHT", -4, 2)
-		self:Tag(hpp, "[status][perhpgrad]")
+		self:Tag(hpp, "[status] [perhpgrad]")
 		
 		-- Auras
 		local auras = CreateFrame("Frame", nil, self)
@@ -465,7 +465,7 @@ local func = function(settings, self, unit)
 		-- Health Deficit
 		local hpd = createString(hp, fontSize-2)
 		hpd:SetPoint("RIGHT", -4, 2)
-		self:Tag(hpd, "[status][missinghp]")
+		self:Tag(hpd, "[status] [missinghp]")
 		
 		-- Auras (Debuffs only)
 		local debuffs = CreateFrame("Frame", nil, self)
