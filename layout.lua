@@ -85,6 +85,10 @@ local health = {
 	[2] = { r = 34/255,  g = 250/255, b = 42/255 }, -- Green
 }
 
+local castColors = {
+	['CAST'] = { 66/255, 79/255, 87/255 }
+}
+
 local UnitReactionColor = {
 	[1] = { 219/255, 48/255,  41/255 }, -- Hated
 	[2] = { 219/255, 48/255,  41/255 }, -- Hostile
@@ -182,6 +186,16 @@ local backdrop = {
 -- Frame Creation
 -- ----------------------------------------------------------------------------
 
+local function createString(parent, fontSize)
+	local fs = parent:CreateFontString(nil, "OVERLAY")
+	fs:SetFont(font, fontSize)
+	--fs:SetPoint("RIGHT", -4, 2)
+	fs:SetShadowColor(0, 0, 0, 0.9)
+	fs:SetShadowOffset(1, -1)
+	
+	return fs
+end
+
 local function createBarFrame(parent, height)
 	local bar = CreateFrame("StatusBar")
 	bar:SetHeight(height)
@@ -239,15 +253,41 @@ local function createPowerBarFrame(parent)
 	
 	return bar
 end
-
-local function createString(parent, fontSize)
-	local fs = parent:CreateFontString(nil, "OVERLAY")
-	fs:SetFont(font, fontSize)
-	--fs:SetPoint("RIGHT", -4, 2)
-	fs:SetShadowColor(0, 0, 0, 0.9)
-	fs:SetShadowOffset(1, -1)
+local function createCastBarFrame(parent)
+	local bar = createBarFrame(parent, 16)
+	bar:SetPoint("TOP", parent, "BOTTOM", 0, -4)
+	bar:SetPoint("LEFT", 16, 0)
+	bar:SetStatusBarColor(castColors['CAST'][0], castColors['CAST'][1], castColors['CAST'][2])
 	
-	return fs
+	local bg = bar:CreateTexture(nil, "ARTWORK")
+	bg:SetHeight(bar:GetHeight())
+	bg:SetWidth(bar:GetWidth())
+	bg:SetVertexColor(0, 0, 0, 1)
+	bg:SetTexture(statusbarTexture)
+	bg:SetPoint("LEFT")
+	bg:SetPoint("RIGHT")
+	
+	bar.bg = bg
+	
+	local ctime = createString(bar, 12)
+	ctime:SetPoint("RIGHT", bar, -2, 0)
+	ctime:SetTextColor(1, 1, 1)
+	bar.Time = ctime
+	
+	local ctext = createString(bar, 12)
+	ctext:SetPoint("LEFT", bar, 2, 0)
+	ctext:SetPoint("RIGHT", ctime, "LEFT", -2, 0)
+	ctext:SetJustifyH("LEFT")
+	ctext:SetTextColor(1, 1, 1)
+	bar.Text = ctext
+	
+	local cicon = bar:CreateTexture(nil, "BORDER")
+	cicon:SetPoint("RIGHT", bar, "LEFT")
+	cicon:SetWidth(16)
+	cicon:SetHeight(16)
+	bar.Icon = cicon
+	
+	return bar
 end
 
 local function createCombatFeedback(self, parent)
@@ -307,6 +347,7 @@ local func = function(settings, self, unit)
 		local ib = createInfoBarFrame(self)		-- Info Bar
 		local hp = createHealthBarFrame(self) 	-- Health Bar
 		local pp = createPowerBarFrame(hp) 		-- Power Bar
+		--local cast = createCastBarFrame(self)   -- Cast Bar
 		
 		createCombatFeedback(self, hp)			-- Combat Feedback
 		
@@ -322,6 +363,15 @@ local func = function(settings, self, unit)
 		
 		self.Health = hp
 		self.Power = pp
+		--self.Castbar = cast
+		
+		local cb = CreateFrame("StatusBar")
+		cb:SetStatusBarTexture(statusbarTexture)
+		cb:SetStatusBarColor(1, .25, .35, .5)
+		cb:SetParent(self)
+		cb:SetAllPoints(hp)
+		cb:SetToplevel(true)
+		self.Castbar = cb
 
 		self.Spark = createPowerSpark(pp)
 	-- Target ---------------------------------------------
@@ -329,6 +379,7 @@ local func = function(settings, self, unit)
 		local ib = createInfoBarFrame(self)		-- Info Bar
 		local hp = createHealthBarFrame(self)	-- Health Bar
 		local pp = createPowerBarFrame(hp)		-- Power Bar
+		local cast = createCastBarFrame(self)   -- Cast Bar
 		
 		createCombatFeedback(self, hp)			-- Combat Feedback
 		
@@ -381,6 +432,7 @@ local func = function(settings, self, unit)
 		
 		self.Health = hp
 		self.Power = pp
+		self.Castbar = cast
 	-- TargetTarget ---------------------------------------
 	elseif unit == 'targettarget' then
 		--local ib = createInfoBarFrame(self)			-- Info Bar
