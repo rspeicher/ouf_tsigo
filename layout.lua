@@ -95,6 +95,7 @@ local UnitReactionColor = {
 	[7] = { 75/255,  175/255, 76/255 }, -- Revered
 	[8] = { 75/255,  175/255, 76/255 }, -- Exalted
 }
+oUF.colors.reaction = UnitReactionColor
 
 -- ----------------------------------------------------------------------------
 -- Custom tags
@@ -368,7 +369,6 @@ local func = function(settings, self, unit)
 		ricon:SetHeight(24)
 		ricon:SetWidth(24)
 		ricon:SetPoint("TOPLEFT", self, "TOPRIGHT", 4, 0)
-		ricon:SetTexture("Interface\\TargetingFrame\\UI-RaidTargetingIcons")
 		self.RaidIcon = ricon
 		
 		-- Combo Points
