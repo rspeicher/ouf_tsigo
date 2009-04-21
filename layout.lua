@@ -448,6 +448,26 @@ local func = function(settings, self, unit)
 		self.Power = pp
 
 		self.PostCreateAuraIcon = auraIcon
+	elseif unit == "focustarget" then
+		local hp = createHealthBarFrame(self)		-- Health Bar
+		local pp = createPowerBarFrame(hp)			-- Power Bar
+		
+		hp:SetHeight(16)
+		hp.bg:SetHeight(16)
+		pp:SetHeight(4)
+		
+		-- Name
+		local name = createString(self, fontSize)
+		name:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 2)
+		self:Tag(name, "[verbosename]")
+		
+		-- Health Percent
+		local hpp = createString(hp, fontSize-2)
+		hpp:SetPoint("RIGHT", -4, 2)
+		self:Tag(hpp, "[status] [perhpgrad]")
+		
+		self.Health = hp
+		self.Power = pp
 	-- Party ----------------------------------------------
 	elseif not unit then
 		local hp = createHealthBarFrame(self)		-- Health Bar
@@ -546,6 +566,8 @@ oUF:SetActiveStyle("tsigo_Party")
 
 local focus = oUF:Spawn("focus")
 focus:SetPoint("BOTTOMRIGHT", player, "TOPLEFT", -10, 75)
+local focustarget = oUF:Spawn("focustarget")
+focustarget:SetPoint("BOTTOM", focus, "TOP", 0, 20)
 
 local party = oUF:Spawn("header", "oUF_Party")
 party:SetPoint("BOTTOMLEFT", target, "TOPRIGHT", 15, 75)
