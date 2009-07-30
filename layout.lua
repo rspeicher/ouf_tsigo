@@ -58,39 +58,39 @@ local UnitCreatureType = UnitCreatureType
 -- Custom colors --------------------------------------------------------------
 
 oUF.colors.class = {
-	["DEATHKNIGHT"] = { 196/255, 30/255,  59/255 },
-	["DRUID"]       = { 255/255, 124/255, 10/255 },
-	["HUNTER"]      = { 163/255, 251/255, 131/255 },
-	["MAGE"]        = { 123/255, 203/255, 254/255 },
-	["PALADIN"]     = { 245/255, 137/255, 186/255 },
-	["PRIEST"]      = { 194/255, 252/255, 254/255 },
-	["ROGUE"]       = { 255/255, 241/255, 106/255 },
-	["SHAMAN"]      = { 0/255,   254/255, 255/255 },	-- Caith's Shaman color
+	["DEATHKNIGHT"] = { 196/255, 30/255,  59/255 },		-- (0.76, 0.11, 0.23)
+	["DRUID"]       = { 255/255, 124/255, 10/255 },		-- (1.0, 0.49, 0.03)
+	["HUNTER"]      = { 163/255, 251/255, 131/255 },	-- (0.63, 0.98, 0.51)
+	["MAGE"]        = { 123/255, 203/255, 254/255 },	-- (0.48, 0.79, 0.99)
+	["PALADIN"]     = { 245/255, 137/255, 186/255 },	-- (0.96, 0.53, 0.72)
+	["PRIEST"]      = { 194/255, 252/255, 254/255 },	-- (0.76, 0.98, 0.99)
+	["ROGUE"]       = { 255/255, 241/255, 106/255 },	-- (1.0, 0.94, 0.41)
+	["SHAMAN"]      = { 0/255,   254/255, 255/255 },	-- Caith's Shaman color (0, 0.99, 1)
 	--["SHAMAN"]    = { 6/255,   60/255,  188/255 },	-- More traditional Shaman blue
-	["WARLOCK"]     = { 187/255, 162/255, 254/255 },
-	["WARRIOR"]     = { 210/255, 188/255, 149/255 },
+	["WARLOCK"]     = { 187/255, 162/255, 254/255 },	-- (0.73, 0.63, 0.99)
+	["WARRIOR"]     = { 210/255, 188/255, 149/255 },	-- (0.82, 0.73, 0.58)
 }
 
 oUF.colors.power = {
-	['MANA'] = { 146/255, 196/255, 249/255 }, -- Mana
-	['RAGE'] = { 160/255, 96/255,  97/255  }, -- Rage
-	['FOCUS'] = { 202/255, 181/255, 126/255 }, -- Focus
-	['ENERGY'] = { 228/255, 218/255, 167/255 }, -- Energy
+	['MANA'] = { 146/255, 196/255, 249/255 }, -- Mana (0.57, 0.76, 0.97)
+	['RAGE'] = { 160/255, 96/255,  97/255  }, -- Rage (0.62, 0.37, 0.38)
+	['FOCUS'] = { 202/255, 181/255, 126/255 }, -- Focus (0.79, 0.70, 0.49)
+	['ENERGY'] = { 228/255, 218/255, 167/255 }, -- Energy (0.89, 0.85, 0.65)
 	['FOCUS'] = { 0, 1, 1} -- Focus
 }
 
 local health = {
-	[0] = { r = 255/255, g = 66/255,  b = 42/255 }, -- Red
-	[1] = { r = 195/255, g = 252/255, b = 0/255 },  -- Yellow-ish
-	[2] = { r = 34/255,  g = 250/255, b = 42/255 }, -- Green
+	[0] = { r = 255/255, g = 66/255,  b = 42/255 }, -- Red (1.0, 0.25, 0.16)
+	[1] = { r = 195/255, g = 252/255, b = 0/255 },  -- Yellow-ish (0.76, 0.98, 0)
+	[2] = { r = 34/255,  g = 250/255, b = 42/255 }, -- Green (0.13, 0.98, 0.16)
 }
 
 local UnitReactionColor = {
 	[1] = { 219/255, 48/255,  41/255 }, -- Hated
-	[2] = { 219/255, 48/255,  41/255 }, -- Hostile
+	[2] = { 219/255, 48/255,  41/255 }, -- Hostile (0.85, 0.18, 0.16)
 	[3] = { 219/255, 48/255,  41/255 }, -- Unfriendly
-	[4] = { 218/255, 197/255, 92/255 }, -- Neutral
-	[5] = { 75/255,  175/255, 76/255 }, -- Friendly
+	[4] = { 218/255, 197/255, 92/255 }, -- Neutral (0.85, 0.77, 0.36)
+	[5] = { 75/255,  175/255, 76/255 }, -- Friendly (0.29, 0.68, 0.29)
 	[6] = { 75/255,  175/255, 76/255 }, -- Honored
 	[7] = { 75/255,  175/255, 76/255 }, -- Revered
 	[8] = { 75/255,  175/255, 76/255 }, -- Exalted
@@ -213,7 +213,6 @@ local function createHealthBarFrame(parent)
 	bar.colorClass = true
 	bar.colorClassNPC = false
 	bar.colorReaction = true
-	bar.frequentUpdates = true
 	
 	local bg = bar:CreateTexture(nil, "ARTWORK")
 	bg:SetHeight(bar:GetHeight())
@@ -236,7 +235,6 @@ local function createPowerBarFrame(parent)
 	bar.colorTapping = false
 	bar.colorDisconnected = true
 	bar.colorPower = true
-	--bar.frequentUpdates = true
 	
 	return bar
 end
@@ -311,6 +309,9 @@ local func = function(settings, self, unit)
 		
 		createCombatFeedback(self, hp)			-- Combat Feedback
 		
+		hp.frequentUpdates = true
+		pp.frequentUpdates = true
+		
 		-- Health Values
 		local hpv = createString(ib, fontSize)
 		hpv:SetPoint("RIGHT", -4, 2)
@@ -330,6 +331,9 @@ local func = function(settings, self, unit)
 		local ib = createInfoBarFrame(self)		-- Info Bar
 		local hp = createHealthBarFrame(self)	-- Health Bar
 		local pp = createPowerBarFrame(hp)		-- Power Bar
+		
+		hp.frequentUpdates = true
+		pp.frequentUpdates = true
 		
 		createCombatFeedback(self, hp)			-- Combat Feedback
 		
@@ -472,6 +476,9 @@ local func = function(settings, self, unit)
 	elseif not unit then
 		local hp = createHealthBarFrame(self)		-- Health Bar
 		local pp = createPowerBarFrame(hp)			-- Power Bar
+		
+		hp.frequentUpdates = true
+		pp.frequentUpdates = true
 		
 		hp:SetHeight(16)
 		hp.bg:SetHeight(16)
